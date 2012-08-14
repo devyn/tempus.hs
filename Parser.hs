@@ -3,6 +3,9 @@ import Text.ParserCombinators.Parsec hiding (many, optional, (<|>))
 import Control.Applicative
 import AST
 
+program :: Parser [Definition]
+program = scope <* eof
+
 scope :: Parser [Definition] 
 scope = many (definition <* optional (lexeme ";"))
 
@@ -10,7 +13,7 @@ definition :: Parser Definition
 definition = try (Function <$> name <* lexeme "("
                            <*> sepBy1 name (try (lexeme ",")) <* lexeme ")" <* lexeme "="
                            <*> sepBy1 expression (lexeme ","))
-             <|> (Value    <$> sepBy1 name (lexeme ",") <* lexeme "="
+         <|>     (Value    <$> sepBy1 name (lexeme ",") <* lexeme "="
                            <*> sepBy1 expression (lexeme ","))
 
 expression :: Parser Expression
