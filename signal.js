@@ -1,11 +1,10 @@
 (function() {
 
-  Signal = function(f) {
-    var s = {};
-    
-    s.evaluate = f;
-    this.sources = [];
-    this.inputs = [];
+  Signal = function(f) {    
+    this.evaluate = f;
+    this.sources     = [];
+    this.inputs      = [];
+    this.subscribers = [];
     for (var i = 1; i < arguments.length; i++) {
       this.sources.push(arguments[i]);
     }
@@ -15,18 +14,16 @@
         this.update(this.evaluate.apply(this, inputs));
       }
     }
+  }
 
-    s.subscribe = function(subscriber) {
-      this.subscribers.push(subscriber);
+  Signal.prototype.subscribe = function(subscriber) {
+    this.subscribers.push(subscriber);
+  }
+  Signal.prototype.update = function(next) {
+    this.value = next;
+    for (var i = 0; i < subscribers.length; i++) {
+      subscribers[i](this.value);
     }
-    s.update = function(next) {
-      this.value = next;
-      for (var i = 0; i < subscribers.length; i++) {
-        subscribers[i](this.value);
-      }
-    }
-
-    return s;
   }
 
 })();
