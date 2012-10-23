@@ -22,7 +22,7 @@
   Signal.prototype.update = function(next) {
     this.value = next;
     for (var i = 0; i < subscribers.length; i++) {
-      subscribers[i](this.value);
+      setInterval(subscribers[i], 0, this.value);
     }
   }
 
