@@ -22,11 +22,11 @@ definition = try (Function <$> name
                            <*> sepBy1 expression (lexeme ","))
 
 expression :: Parser Expression
-expression = parseInfix infixes
-  where parseInfix :: [[String]] -> Parser Expression
-        parseInfix []           = term
-        parseInfix (low:higher) = chainl1 (parseInfix higher)
-                                          ((\ o l r -> Reference o [l, r]) <$> choice (map lexeme low))
+expression = parseInfix infixes where
+  parseInfix :: [[String]] -> Parser Expression
+  parseInfix []           = term
+  parseInfix (low:higher) = chainl1 (parseInfix higher)
+                                          ((\ o l r -> Infix o l r) <$> choice (map lexeme low))
 
 term :: Parser Expression
 term = try (foldl (uncurry . Member) <$> value <*> many (lexeme "." *> reference))
