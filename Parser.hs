@@ -3,6 +3,11 @@ import Text.ParserCombinators.Parsec hiding (many, optional, (<|>))
 import Control.Applicative
 import AST
 
+parser :: String -> String -> Either String [Definition]
+parser filename s = case parse program filename s of
+  Left  err -> Left $ show err
+  Right ast -> Right ast
+
 program :: Parser [Definition]
 program = scope <* eof
 
