@@ -10,17 +10,12 @@ definition (Value names values) =
   "var " ++ intercalate ", " names ++ ";\n" ++
   "(function($) {\n" ++ indent
     (concat (zipWith (++) (map (++ " = $[") names) (map ((++ "];\n") . show) [0..]))) ++
-  "})("++ {-(if length values > 1 then "[" else "")-}"[" ++
+  "})("++ "[" ++
     intercalate ", " (map expression values) ++
-  {-(if length values > 1 then "]" else "")-}"]" ++ ");\n"
+  "]" ++ ");\n"
 definition (Function name arguments values) =
   "var " ++ name ++ " = function(" ++ intercalate ", " arguments ++ ") {\n" ++ indent
-    ("return " ++
-{-    (if length values == 1
-      then
-        expression (head values) ++ ";"
-      else-}
-        "[" ++ intercalate ", " (map expression values) ++ "];") ++
+    ("return " ++ "[" ++ intercalate ", " (map expression values) ++ "];") ++
   "};"
 
 expression :: Expression -> String
