@@ -5,6 +5,6 @@ data Definition = Value   [String]         [Expression]
 data Expression = Reference String [Expression]
                 | Member Expression String [Expression]
                 | Infix String Expression Expression
-				| Prefix String Expression
+                | Prefix String Expression
                 | Object [Definition]
                 | Conditional [(Expression, Expression)] deriving (Show)
