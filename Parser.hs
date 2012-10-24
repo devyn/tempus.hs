@@ -30,7 +30,7 @@ expression = parseInfix infixes where
 
 term :: Parser Expression
 term = try (foldl (uncurry . Member) <$> value <*> many (lexeme "." *> reference))
-       <|> (Reference <$> choice (map lexeme prefixes) <*> ((:[]) <$> term))
+       <|> (Prefix <$> choice (map lexeme prefixes) <*> term)
 
 value :: Parser Expression
 value = try (bracket "(" ")" expression)
