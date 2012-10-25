@@ -13,9 +13,9 @@ definition (Value names values) =
   "})("++ "[" ++
     intercalate ", " (map expression values) ++
   "]" ++ ");\n"
-definition (Function name arguments values) =
+definition (Function name arguments value) =
   "var " ++ name ++ " = function(" ++ intercalate ", " arguments ++ ") {\n" ++ indent
-    ("return " ++ "[" ++ intercalate ", " (map expression values) ++ "];") ++
+    ("return " ++ expression value) ++ -- "[" ++ intercalate ", " (map expression values) ++ "];") ++
   "};"
 
 expression :: Expression -> String

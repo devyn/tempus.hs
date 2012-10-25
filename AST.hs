@@ -1,7 +1,7 @@
 module AST where
 
 data Definition = Value   [String]         [Expression]
-                | Function String [String] [Expression] deriving (Show)
+                | Function String [String] Expression deriving (Show)
 data Expression = Reference String [Expression]
                 | Member Expression String [Expression]
                 | Infix String Expression Expression

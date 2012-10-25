@@ -17,7 +17,7 @@ scope = many (definition <* optional (lexeme ";"))
 definition :: Parser Definition
 definition = try (Function <$> name
                            <*> bracket "(" ")" (sepBy1 name (try (lexeme ","))) <* lexeme "="
-                           <*> sepBy1 expression (lexeme ","))
+                           <*> expression) -- sepBy1 expression (lexeme ","))
              <|> (Value    <$> sepBy1 name (lexeme ",") <* lexeme "="
                            <*> sepBy1 expression (lexeme ","))
 
