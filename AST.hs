@@ -1,10 +1,10 @@
 module AST where
 
-data Definition = Value   [String]         [Expression]
+data Definition = Value    String          Expression
                 | Function String [String] Expression deriving (Show)
-data Expression = Reference String [Expression]
-                | Member Expression String [Expression]
+data Expression = Number Double
+                | String String
+                | Reference String
+                | Application Expression [Expression]
                 | Infix String Expression Expression
-                | Prefix String Expression
-                | Object [Definition]
-                | Conditional [(Expression, Expression)] deriving (Show)
+                | Prefix String Expression deriving (Show)
