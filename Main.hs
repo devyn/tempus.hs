@@ -9,7 +9,7 @@ main = do
   args <- getArgs
   if length args < 2
     then
-      putStrLn "Expect input and output files."
+      putStrLn "Expected input and output files."
     else do
       let (inFile:outFile:_) = args
       program <- readFile inFile
