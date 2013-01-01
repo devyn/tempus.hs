@@ -17,10 +17,10 @@ data Edge = IdentityArgument
           | ApplyFunction
           | ApplyArgument Int deriving (Show)
 data Cursor = R String
-            | AF Cursor
+            | PA Cursor
             | IL Cursor
             | IR Cursor
-            | PA Cursor
+            | AF Cursor
             | AA Int Cursor deriving (Eq, Show)
 
 merge :: Network -> Network -> Network
