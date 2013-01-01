@@ -42,8 +42,8 @@ netFromExpr (Infix o a b) c = Network [(c, InfixNode o)]
                               `merge` netFromExpr a (IL c)
                               `merge` netFromExpr b (IR c)
 netFromExpr (Application f as) c = Network [(c, ApplyNode)]
-                                           ([(AF c, ApplyFunction, c)] ++ map (\n -> (AA n c, ApplyArgument n, c)) [0..length as])
-                                   `merge` foldl merge (netFromExpr f (AF c)) (zipWith (\a n -> netFromExpr a (AA n c)) as [0..length as])
+                                           ([(AF c, ApplyFunction, c)] ++ map (\n -> (AA n c, ApplyArgument n, c)) [0 .. length as - 1])
+                                   `merge` foldl merge (netFromExpr f (AF c)) (zipWith (\a n -> netFromExpr a (AA n c)) as [0 .. length as - 1])
 
 outboundEdges :: Cursor -> Network -> [(Cursor, Edge, Cursor)]
 outboundEdges c (Network _ edges) = filter (\(a, _, _) -> a == c) edges
