@@ -1,6 +1,7 @@
 module Main where
 import AST
 import Parser
+import Network
 import JavaScript
 import System.Environment
 
@@ -15,4 +16,4 @@ main = do
       program <- readFile inFile
       case parser inFile program of
         Left err -> putStrLn err
-        Right program -> writeFile outFile (compiler program)
+        Right program -> print (netFromAST program)
