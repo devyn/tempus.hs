@@ -12,11 +12,10 @@ program :: Parser [Definition]
 program = many (definition <* optional (try $ lexeme ";")) <* spaces <* eof
 
 definition :: Parser Definition
-definition = try (Function <$> name
-                           <*> bracket "(" ")" (sepBy1 name (lexeme ",")) <* lexeme "="
-                           <*> expression)
-             <|> (Value    <$> name <* lexeme "="
-                           <*> expression)
+definition = Definition <$> name
+                        <*> (try (Lambda <$> bracket "(" ")" (sepBy1 name (lexeme ",")) <* lexeme "="
+                                     <*> expression)
+                             <|> (lexeme "=" *> expression))
 
 expression :: Parser Expression
 expression = parseInfix infixes where
