@@ -3,13 +3,18 @@ import Text.ParserCombinators.Parsec hiding (many, optional, (<|>))
 import Control.Applicative
 import AST
 
-parser :: String -> String -> Either String [Definition]
+parser :: String -> String -> Either String Program
 parser filename s = case parse program filename s of
   Left  err -> Left $ show err
   Right ast -> Right ast
 
-program :: Parser [Definition]
-program = many (definition <* optional (try $ lexeme ";")) <* spaces <* eof
+program :: Parser Program
+program = Program <$> many (try interfaceDeclaration <* optional (try $ lexeme ";")) <* spaces
+                  <*> many (try definition <* optional (try $ lexeme ";")) <* spaces <* eof
+
+interfaceDeclaration :: Parser InterfaceDeclaration
+interfaceDeclaration = Import <$> try (keyword "import" *> name)
+                   <|> Export <$> try (keyword "export" *> name)
 
 definition :: Parser Definition
 definition = Definition <$> name
@@ -43,7 +48,7 @@ name :: Parser String
 name = spaces *> many1 (noneOf (" \n\t{}(),;.\"0123456789" ++ (concat.concat) infixes))
 
 number :: Parser Expression
-number = spaces *> ((Number . read) <$> ((++) <$> many1 digit <*> (try ((++) <$> lexeme "." <*> many1 digit) <|> return "")))
+number = spaces *> ((Number . read) <$> ((++) <$> many1 digit <*> (try ((:) <$> char '.' <*> many1 digit) <|> return "")))
 
 str :: Parser Expression
 str = String <$> (spaces *> char '"' *> many (noneOf "\"") <* char '"')
@@ -57,6 +62,9 @@ prefixes = [ "-" ]
 
 lexeme :: String -> Parser String
 lexeme s = spaces *> string s
+
+keyword :: String -> Parser String
+keyword s = spaces *> string s <* many1 (oneOf " \n\t")
 
 bracket :: String -> String -> Parser a -> Parser a
 bracket l r p = between (lexeme l) (lexeme r) p

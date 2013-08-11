@@ -1,0 +1,17 @@
+import frameNumber
+import sin
+import cos
+import rgb
+import rect
+import composite
+export canvas
+
+x = 150 + sin(frameNumber/30) * 75
+y = 150 + cos(frameNumber/30) * 75
+
+color = rgb(sin(frameNumber/30), sin(frameNumber/40), sin(frameNumber/50))
+
+character = rect(x - 15, y - 15, 30, 30, color)
+
+canvas = composite(rect(0, 0, 300, 300, rgb(1,1,1)), character)
+

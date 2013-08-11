@@ -16,4 +16,5 @@ main = do
       program <- readFile inFile
       case parser inFile program of
         Left err -> putStrLn err
-        Right program -> print (netFromAST program)
+        Right program ->
+          writeFile outFile (programToJavaScript program)

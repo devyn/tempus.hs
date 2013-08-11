@@ -21,13 +21,18 @@ data Cursor = R String
             | IL Cursor
             | IR Cursor
             | AF Cursor
-            | AA Int Cursor deriving (Eq, Show)
+            | AA Int Cursor deriving (Ord, Eq, Show)
+              -- Ord instance is just for Map
+
+isConstantNode (NumberNode _) = True
+isConstantNode (StringNode _) = True
+isConstantNode _              = False
 
 merge :: Network -> Network -> Network
 merge (Network nodes1 edges1) (Network nodes2 edges2) = Network (nodes1 ++ nodes2) (edges1 ++ edges2)
 
-netFromAST :: [Definition] -> Network
-netFromAST = foldl merge (Network [] []) . map netFromDefinition
+netFromDefinitions :: [Definition] -> Network
+netFromDefinitions = foldl merge (Network [] []) . map netFromDefinition
 
 netFromDefinition :: Definition -> Network
 netFromDefinition (Definition name value) = netFromExpr value (R name)
