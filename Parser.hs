@@ -9,12 +9,12 @@ parser filename s = case parse program filename s of
   Right ast -> Right ast
 
 program :: Parser Program
-program = Program <$> many (try interfaceDeclaration <* optional (try $ lexeme ";")) <* spaces
+program = Program <$> concat <$> (many (try interfaceDeclaration <* optional (try $ lexeme ";"))) <* spaces
                   <*> many (try definition <* optional (try $ lexeme ";")) <* spaces <* eof
 
-interfaceDeclaration :: Parser InterfaceDeclaration
-interfaceDeclaration = Import <$> try (keyword "import" *> name)
-                   <|> Export <$> try (keyword "export" *> name)
+interfaceDeclaration :: Parser [InterfaceDeclaration]
+interfaceDeclaration = try (lexeme "import") *> (map Import <$> bracket "(" ")" (sepBy1 name (lexeme ",")))
+                   <|> try (lexeme "export") *> (map Export <$> bracket "(" ")" (sepBy1 name (lexeme ",")))
 
 definition :: Parser Definition
 definition = Definition <$> name
@@ -62,9 +62,6 @@ prefixes = [ "-" ]
 
 lexeme :: String -> Parser String
 lexeme s = spaces *> string s
-
-keyword :: String -> Parser String
-keyword s = spaces *> string s <* many1 (oneOf " \n\t")
 
 bracket :: String -> String -> Parser a -> Parser a
 bracket l r p = between (lexeme l) (lexeme r) p
