@@ -32,7 +32,7 @@ jsNodeSpace interfaceDeclarations destinationMap nodeMap =
 
   where nodeDefinition (cursor, node, destinations) =
           cursorToIdentifier cursor ++ ":" ++
-          jsNode node (exportCode cursor ++ concatMap (jsEdge "value") destinations)
+          jsNode node (exportCode cursor ++ jsEdges "value" destinations)
 
         initConstants = concat ["ns." ++ cursorToIdentifier cursor ++ ".update();"
                                | (cursor, node, _) <- nodeMap
@@ -41,7 +41,7 @@ jsNodeSpace interfaceDeclarations destinationMap nodeMap =
         initInterface = flip concatMap interfaceDeclarations $ \ declaration ->
                           case declaration of
                                Import r -> "ns.imports[" ++ JSON.encode r ++ "]=function(value){"
-                                        ++ maybe "" (concatMap (jsEdge "value")) (Map.lookup (R r) destinationMap)
+                                        ++ maybe "" (jsEdges "value") (Map.lookup (R r) destinationMap)
                                         ++ "};"
 
                                Export r -> "ns.exports[" ++ JSON.encode r ++ "]={value:null,update:function(){}};"
@@ -59,7 +59,9 @@ jsNode (InfixNode o)  updateCode = "{left:null,right:null,update:function(){var 
 jsNode (PrefixNode o) updateCode = "{prefixArg:null,update:function(){var value=this.prefixArg!==null?" ++ o ++ "(this.prefixArg):null;" ++ updateCode ++ "}}"
 jsNode ApplyNode      updateCode = "{fn:null,fnArgs:[],update:function(){var value=typeof this.fn==='function'?this.fn.apply(null,this.fnArgs):null;" ++ updateCode ++ "}}"
 
-jsEdge srcExpression (edge, destCursor) = edgeSet edge ++ destName ++ ".update();"
+jsEdges srcExpression = concat . uncurry (++) . unzip . map (jsEdge srcExpression)
+
+jsEdge srcExpression (edge, destCursor) = (edgeSet edge, destName ++ ".update();")
   where destName = "ns." ++ cursorToIdentifier destCursor
 
         edgeSet  IdentityArgument = destName ++ ".identity="  ++ srcExpression ++ ";"
