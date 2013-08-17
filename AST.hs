@@ -1,6 +1,6 @@
 module AST where
 
-data Program = Program [InterfaceDeclaration] [Definition]
+data Program = Program [InterfaceDeclaration] [Definition] deriving (Show)
 
 data InterfaceDeclaration = Import String
                           | Export String deriving (Show, Eq)
