@@ -16,7 +16,9 @@ programToJavaScript (Program interfaceDeclarations definitions) =
 jsNodeSpace :: [InterfaceDeclaration] -> Network -> String
 
 jsNodeSpace interfaceDeclarations network@(Network nodes edges) =
-  "var ns={" ++ intercalate "," ("imports:{},exports:{}" : map nodeDefinition nodeMap) ++ "};" ++ initInterface
+  "var ns={" ++ intercalate "," ( ("imports:{" ++ importStubs ++ "},exports:{" ++ exportStubs ++ "}")
+                                : map nodeDefinition nodeMap
+                                ) ++ "};"
 
   where destinationMap = makeDestinationMap edges
         nodeMap        = makeNodeMap nodes destinationMap
@@ -25,14 +27,15 @@ jsNodeSpace interfaceDeclarations network@(Network nodes edges) =
           cursorToIdentifier cursor ++ ":" ++
           jsNode node (exportCode cursor ++ jsEdges "value" destinations)
 
-        initInterface = flip concatMap interfaceDeclarations $ \ declaration ->
-                          case declaration of
-                               Import r -> "ns.imports[" ++ JSON.encode r ++ "]=function(value){"
-                                        ++ waitValuesFromImport network r
-                                        ++ maybe "" (jsEdges "value") (Map.lookup (R r) destinationMap)
-                                        ++ "};"
+        importStubs = intercalate "," $ map importStub [r | Import r <- interfaceDeclarations]
+        exportStubs = intercalate "," $ map exportStub [r | Export r <- interfaceDeclarations]
 
-                               Export r -> "ns.exports[" ++ JSON.encode r ++ "]={value:null,update:function(){}};"
+        importStub r = JSON.encode r ++ ":function(value){"
+                                     ++ waitValuesFromImport network r
+                                     ++ maybe "" (jsEdges "value") (Map.lookup (R r) destinationMap)
+                                     ++ "}"
+
+        exportStub r = JSON.encode r ++ ":{value:null,update:function(){}}"
 
         exportCode cursor = case cursor of
                                  R r | Export r `elem` interfaceDeclarations
