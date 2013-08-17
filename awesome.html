@@ -39,10 +39,12 @@
           }
         };
 
-        setInterval(function () {
+        var render = function () {
           ns.imports.frameNumber(frameNumber);
           frameNumber++;
-        }, 1000/30);
+          window.requestAnimationFrame(render);
+        };
+        window.requestAnimationFrame(render);
       };
     </script>
   </head>

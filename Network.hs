@@ -1,6 +1,7 @@
 module Network where
 import AST
 import Data.Maybe
+import Data.List
 
 data Network = Network [(Cursor, Node)] [(Cursor, Edge, Cursor)] deriving (Show)
 
@@ -9,13 +10,13 @@ data Node = IdentityNode
           | StringNode String
           | InfixNode String
           | PrefixNode String
-          | ApplyNode deriving (Show)
+          | ApplyNode deriving (Eq, Show)
 data Edge = IdentityArgument
           | InfixLeft
           | InfixRight
           | PrefixArgument
           | ApplyFunction
-          | ApplyArgument Int deriving (Show)
+          | ApplyArgument Int deriving (Eq, Show)
 data Cursor = R String
             | PA Cursor
             | IL Cursor
@@ -57,6 +58,6 @@ inboundEdges :: Cursor -> [(Cursor, Edge, Cursor)] -> [(Cursor, Edge, Cursor)]
 inboundEdges c = filter (\(_, _, b) -> b == c)
 
 edgesAffectedBy :: Cursor -> [(Cursor, Edge, Cursor)] -> [(Cursor, Edge, Cursor)]
-edgesAffectedBy c edges = oe ++ concatMap (flip edgesAffectedBy edges) oc
+edgesAffectedBy c edges = nub $ oe ++ concatMap (flip edgesAffectedBy edges) oc
   where oe = outboundEdges c edges
         oc = map (\ (_, _, b) -> b) oe
