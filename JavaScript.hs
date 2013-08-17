@@ -28,7 +28,7 @@ makeNodeMap nodes destinationMap = map (\ (cursor, node) -> (cursor, node, Map.f
 jsNodeSpace :: [InterfaceDeclaration] -> Map Cursor [(Edge, Cursor)] -> [(Cursor, Node, [(Edge, Cursor)])] -> String
 
 jsNodeSpace interfaceDeclarations destinationMap nodeMap =
-  "var ns={imports:{},exports:{}," ++ intercalate "," (map nodeDefinition nodeMap) ++ "};" ++ initInterface ++ initConstants
+  "var ns={" ++ intercalate "," ("imports:{},exports:{}" : map nodeDefinition nodeMap) ++ "};" ++ initInterface ++ initConstants
 
   where nodeDefinition (cursor, node, destinations) =
           cursorToIdentifier cursor ++ ":" ++
