@@ -50,8 +50,13 @@ netFromExpr (Application f as) c = Network [(c, ApplyNode)]
                                            ([(AF c, ApplyFunction, c)] ++ map (\n -> (AA n c, ApplyArgument n, c)) [0 .. length as - 1])
                                    `merge` foldl merge (netFromExpr f (AF c)) (zipWith (\a n -> netFromExpr a (AA n c)) as [0 .. length as - 1])
 
-outboundEdges :: Cursor -> Network -> [(Cursor, Edge, Cursor)]
-outboundEdges c (Network _ edges) = filter (\(a, _, _) -> a == c) edges
+outboundEdges :: Cursor -> [(Cursor, Edge, Cursor)] -> [(Cursor, Edge, Cursor)]
+outboundEdges c = filter (\(a, _, _) -> a == c)
 
-inboundEdges :: Cursor -> Network -> [(Cursor, Edge, Cursor)]
-inboundEdges c (Network _ edges) = filter (\(_, _, b) -> b == c) edges
+inboundEdges :: Cursor -> [(Cursor, Edge, Cursor)] -> [(Cursor, Edge, Cursor)]
+inboundEdges c = filter (\(_, _, b) -> b == c)
+
+edgesAffectedBy :: Cursor -> [(Cursor, Edge, Cursor)] -> [(Cursor, Edge, Cursor)]
+edgesAffectedBy c edges = oe ++ concatMap (flip edgesAffectedBy edges) oc
+  where oe = outboundEdges c edges
+        oc = map (\ (_, _, b) -> b) oe
