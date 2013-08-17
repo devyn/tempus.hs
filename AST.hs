@@ -13,3 +13,7 @@ data Expression = Number Double
                 | Prefix String Expression
                 | Infix String Expression Expression
                 | Application Expression [Expression] deriving (Show)
+
+isConstantExpression (Number _) = True
+isConstantExpression (String _) = True
+isConstantExpression _          = False
